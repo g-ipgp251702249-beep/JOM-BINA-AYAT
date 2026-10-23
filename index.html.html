@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOM BINA AYAT! - Bahasa Melayu Tahun 5</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Comic Neue for child-friendly typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for winning animation -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sky-soft': '#E0F2FE',
+                        'yellow-soft': '#FEF08A',
+                        'yellow-bright': '#FACC15',
+                        'pastel-blue': '#BAE6FD',
+                        'pastel-green': '#BBF7D0',
+                        'pastel-pink': '#FBCFE8',
+                        'primary-blue': '#0284C7',
+                        'dark-blue': '#1E3A8A'
+                    },
+                    fontFamily: {
+                        'fredoka': ['Fredoka', 'sans-serif'],
+                        'comic': ['Comic Neue', 'cursive', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', 'Comic Neue', sans-serif;
+            background-color: #E0F2FE;
+            background-image: 
+                radial-gradient(#BAE6FD 2px, transparent 2px),
+                radial-gradient(#BAE6FD 2px, #E0F2FE 2px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        /* Cute sticker hover effects */
+        .sticker-card {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .sticker-card:hover {
+            transform: translateY(-4px) rotate(0.5deg);
+        }
+
+        /* Custom Animated Buttons */
+        .btn-bounce {
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 shadow-color;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-2px);
+        }
+        .btn-bounce:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 shadow-color;
+        }
+
+        .btn-blue {
+            background-color: #0284C7;
+            color: white;
+            box-shadow: 0 6px 0 #0369A1;
+        }
+        .btn-blue:active { box-shadow: 0 2px 0 #0369A1; }
+
+        .btn-yellow {
+            background-color: #FACC15;
+            color: #1E3A8A;
+            box-shadow: 0 6px 0 #CA8A04;
+        }
+        .btn-yellow:active { box-shadow: 0 2px 0 #CA8A04; }
+
+        .btn-green {
+            background-color: #22C55E;
+            color: white;
+            box-shadow: 0 6px 0 #15803D;
+        }
+        .btn-green:active { box-shadow: 0 2px 0 #15803D; }
+
+        .btn-purple {
+            background-color: #A855F7;
+            color: white;
+            box-shadow: 0 6px 0 #7E22CE;
+        }
+        .btn-purple:active { box-shadow: 0 2px 0 #7E22CE; }
+
+        .btn-gray {
+            background-color: #9CA3AF;
+            color: white;
+            box-shadow: 0 6px 0 #4B5563;
+        }
+        .btn-gray:active { box-shadow: 0 2px 0 #4B5563; }
+
+        /* Floating animation for decorative stars & badges */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 3.5s ease-in-out 1.5s infinite;
+        }
+
+        /* Pulse highlight for proverb box */
+        @keyframes highlight-pulse {
+            0%, 100% { border-color: #FACC15; }
+            50% { border-color: #38BDF8; }
+        }
+        .proverb-box {
+            animation: highlight-pulse 2.5s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between p-3 sm:p-6">
+
+    <!-- TOP HEADER / NAV BAR -->
+    <header class="max-w-4xl mx-auto w-full flex items-center justify-between bg-white/90 backdrop-blur border-4 border-white rounded-3xl p-3 sm:p-4 mb-4 shadow-lg relative z-10">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl sm:text-4xl animate-bounce">🛡️</span>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-primary-blue tracking-wide leading-tight">JOM BINA AYAT!</h1>
+                <p class="text-xs sm:text-sm text-slate-500 font-medium">Bahasa Melayu Tahun 5 • Tema Keselamatan</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded-full text-xs sm:text-sm border border-yellow-300 flex items-center gap-1">
+                ⭐ <span id="score-star-count">0</span>/5
+            </span>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-4xl mx-auto w-full flex-grow flex flex-col justify-center items-center">
+
+        <!-- 1. LANDING / HOME PAGE -->
+        <section id="home-screen" class="w-full bg-white border-4 border-sky-200 rounded-3xl p-6 sm:p-10 text-center sticker-card relative overflow-hidden my-auto">
+            <!-- Decorative floating background icons -->
+            <div class="absolute top-4 left-4 text-3xl animate-float opacity-80">⭐</div>
+            <div class="absolute top-8 right-6 text-3xl animate-float-delayed opacity-80">🛡️</div>
+            <div class="absolute bottom-4 left-6 text-3xl animate-float-delayed opacity-80">🌂</div>
+            <div class="absolute bottom-6 right-8 text-3xl animate-float opacity-80">🚴‍♂️</div>
+
+            <!-- Mascot Banner -->
+            <div class="inline-block relative mb-4">
+                <div class="w-28 h-28 sm:w-36 sm:h-36 mx-auto bg-amber-100 rounded-full flex items-center justify-center border-4 border-yellow-300 shadow-inner">
+                    <!-- SVG Cartoon Students -->
+                    <svg class="w-24 h-24 sm:w-28 sm:h-28" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Boy Student -->
+                        <circle cx="80" cy="70" r="30" fill="#FDE047"/>
+                        <path d="M50 70C50 45 110 45 110 70" fill="#1E3A8A"/> <!-- Hair -->
+                        <circle cx="70" cy="70" r="4" fill="#1E293B"/> <!-- Eye L -->
+                        <circle cx="90" cy="70" r="4" fill="#1E293B"/> <!-- Eye R -->
+                        <path d="M75 82 Q80 88 85 82" stroke="#1E293B" stroke-width="3" stroke-linecap="round" fill="none"/> <!-- Smile -->
+                        <path d="M55 120 C55 95 105 95 105 120 L105 150 L55 150 Z" fill="#0284C7"/> <!-- Uniform -->
+                        <path d="M80 100 L80 130" stroke="#FFFFFF" stroke-width="6"/> <!-- Tie -->
+                        
+                        <!-- Girl Student with Songkok/Tudung or School Girl -->
+                        <circle cx="130" cy="85" r="26" fill="#FED7AA"/>
+                        <path d="M100 85 C100 55 160 55 160 85 C160 115 100 115 100 85 Z" fill="#FFFFFF"/> <!-- Tudung -->
+                        <circle cx="120" cy="85" r="3.5" fill="#1E293B"/> <!-- Eye -->
+                        <circle cx="138" cy="85" r="3.5" fill="#1E293B"/> <!-- Eye -->
+                        <path d="M124 95 Q129 100 134 95" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" fill="none"/> <!-- Smile -->
+                        <path d="M110 125 C110 105 150 105 150 125 L150 150 L110 150 Z" fill="#0284C7"/> <!-- Pinafore/Baju Kurung -->
+                    </svg>
+                </div>
+                <span class="absolute -bottom-2 -right-2 bg-yellow-400 text-slate-900 font-extrabold text-xs px-3 py-1 rounded-full border-2 border-white shadow">
+                    Tahun 5!
+                </span>
+            </div>
+
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-primary-blue mb-2 tracking-wide">
+                JOM BINA AYAT!
+            </h2>
+            <p class="text-lg sm:text-xl font-semibold text-amber-600 mb-6">
+                "Fikir, Susun dan Bina Ayat dengan Betul!"
+            </p>
+
+            <!-- Instructions Card -->
+            <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 sm:p-6 mb-8 text-left max-w-2xl mx-auto shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-dark-blue mb-2 flex items-center gap-2">
+                    📌 Arahan Ringkas:
+                </h3>
+                <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    Lihat gambar, fahami situasi dan bina <strong>dua ayat</strong> yang sesuai. Pastikan salah satu ayat mengandungi <strong>peribahasa</strong> yang berkaitan dengan tajuk keselamatan.
+                </p>
+            </div>
+
+            <button onclick="startActivity()" class="btn-bounce btn-yellow text-xl sm:text-2xl font-bold px-8 py-4 rounded-2xl cursor-pointer transform hover:scale-105 inline-flex items-center gap-3">
+                🚀 MULA AKTIVITI
+            </button>
+        </section>
+
+
+        <!-- 2. ACTIVITY SCREEN -->
+        <section id="activity-screen" class="w-full hidden flex-col gap-4">
+
+            <!-- Progress Bar Card -->
+            <div class="bg-white rounded-2xl p-4 border-2 border-sky-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <span id="question-badge" class="bg-primary-blue text-white font-bold px-3 py-1 rounded-xl text-sm whitespace-nowrap">
+                        Soalan 1 daripada 5
+                    </span>
+                    <span class="text-slate-500 text-xs sm:text-sm font-medium hidden md:inline">Latihan Bina Ayat Gramatis</span>
+                </div>
+                <div class="w-full sm:w-1/2 bg-slate-100 rounded-full h-4 overflow-hidden border border-slate-200">
+                    <div id="progress-bar-fill" class="bg-gradient-to-r from-yellow-400 to-green-400 h-full transition-all duration-500 rounded-full" style="width: 20%;"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                <!-- Left Column: Illustration & Proverb Card -->
+                <div class="lg:col-span-5 bg-white border-4 border-sky-100 rounded-3xl p-4 sm:p-5 sticker-card flex flex-col items-center">
+                    
+                    <!-- Question Header Instruction -->
+                    <div class="w-full bg-amber-100 text-amber-900 font-bold text-center py-2 px-3 rounded-xl mb-3 text-sm sm:text-base border border-amber-200">
+                        🖼️ Bina dua ayat berdasarkan gambar.
+                    </div>
+
+                    <!-- SVG Dynamic Illustration Box -->
+                    <div id="illustration-container" class="w-full h-52 sm:h-60 bg-sky-50 rounded-2xl border-2 border-dashed border-sky-200 flex items-center justify-center p-2 overflow-hidden relative">
+                        <!-- SVG graphic will be inserted via JS -->
+                    </div>
+
+                    <!-- Proverb Box -->
+                    <div class="w-full mt-4 bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-3 text-center proverb-box shadow-sm">
+                        <span class="text-xs text-amber-700 font-bold uppercase tracking-wider block mb-1">💡 Peribahasa Berkaitan:</span>
+                        <p id="proverb-text" class="text-base sm:text-lg font-bold text-dark-blue">
+                            "Sediakan payung sebelum hujan."
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- Right Column: Input Fields & Action Buttons -->
+                <div class="lg:col-span-7 bg-white border-4 border-sky-100 rounded-3xl p-4 sm:p-6 sticker-card flex flex-col justify-between min-h-full">
+                    
+                    <div class="space-y-4">
+                        <!-- Alert / Reminder Note -->
+                        <div class="text-xs sm:text-sm text-slate-600 bg-blue-50 border-l-4 border-primary-blue p-2.5 rounded-r-xl">
+                            <strong>⚠️ Peringatan:</strong> Pastikan salah satu daripada ayat kamu mengandungi peribahasa di sebelah!
+                        </div>
+
+                        <!-- Sentence 1 Input -->
+                        <div>
+                            <label for="input-ayat-1" class="block font-bold text-slate-700 mb-1 text-sm sm:text-base flex items-center justify-between">
+                                <span>✍️ Ayat 1:</span>
+                                <span class="text-xs text-slate-400 font-normal">Sebab/Situasi</span>
+                            </label>
+                            <textarea id="input-ayat-1" rows="2" 
+                                class="w-full p-3 rounded-2xl border-2 border-slate-200 focus:border-primary-blue focus:ring-2 focus:ring-sky-200 outline-none font-comic text-base sm:text-lg transition"
+                                placeholder="Taip ayat pertama anda di sini..."></textarea>
+                        </div>
+
+                        <!-- Sentence 2 Input -->
+                        <div>
+                            <label for="input-ayat-2" class="block font-bold text-slate-700 mb-1 text-sm sm:text-base flex items-center justify-between">
+                                <span>✍️ Ayat 2 (Sertakan Peribahasa):</span>
+                                <span class="text-xs text-amber-600 font-semibold">Mengandungi peribahasa</span>
+                            </label>
+                            <textarea id="input-ayat-2" rows="2" 
+                                class="w-full p-3 rounded-2xl border-2 border-slate-200 focus:border-primary-blue focus:ring-2 focus:ring-sky-200 outline-none font-comic text-base sm:text-lg transition"
+                                placeholder="Taip ayat kedua berserta peribahasa..."></textarea>
+                        </div>
+
+                        <!-- Feedback Message Box -->
+                        <div id="feedback-box" class="hidden p-4 rounded-2xl border-2 transition-all duration-300">
+                            <p id="feedback-text" class="font-bold text-sm sm:text-base leading-snug"></p>
+                        </div>
+
+                        <!-- Sample Answer Modal / Container -->
+                        <div id="sample-answer-box" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-slate-800">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-amber-900 text-sm flex items-center gap-1">
+                                    💡 Contoh Jawapan Rujukan:
+                                </span>
+                                <span class="text-xs text-amber-700 bg-amber-200 px-2 py-0.5 rounded-md">Untuk Semakan</span>
+                            </div>
+                            <div class="text-sm sm:text-base space-y-2 font-comic">
+                                <p><strong>Ayat 1:</strong> <span id="sample-1-text" class="text-slate-700"></span></p>
+                                <p><strong>Ayat 2:</strong> <span id="sample-2-text" class="text-slate-700"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controls Footer Buttons -->
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex flex-wrap gap-2 sm:gap-3 items-center justify-between">
+                        
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <!-- Back Button -->
+                            <button id="btn-back" onclick="prevQuestion()" class="btn-bounce btn-gray font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-1 justify-center flex-1 sm:flex-none">
+                                👈 Kembali
+                            </button>
+
+                            <!-- Example Button -->
+                            <button id="btn-sample" onclick="toggleSampleAnswer()" class="btn-bounce btn-purple font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-1 justify-center flex-1 sm:flex-none">
+                                👁️ Lihat Contoh
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                            <!-- Check Button -->
+                            <button id="btn-check" onclick="checkAnswer()" class="btn-bounce btn-yellow font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-1 justify-center flex-1 sm:flex-none">
+                                ✅ Semak Jawapan
+                            </button>
+
+                            <!-- Next Button -->
+                            <button id="btn-next" onclick="nextQuestion()" class="btn-bounce btn-green font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-1 justify-center flex-1 sm:flex-none">
+                                Soalan Seterusnya 👉
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 3. FINISH / CONGRATULATIONS PAGE -->
+        <section id="finish-screen" class="w-full hidden bg-white border-4 border-sky-200 rounded-3xl p-6 sm:p-10 text-center sticker-card my-auto">
+            <div class="text-5xl sm:text-6xl mb-3 animate-bounce">🏆 🎉</div>
+            
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-primary-blue mb-2">
+                TAHNIAH! KAMU MEMANG HEBAT!
+            </h2>
+            <p class="text-slate-600 text-base sm:text-lg mb-6 max-w-lg mx-auto">
+                Kamu telah berjaya menyelesaikan semua 5 aktiviti membina ayat dengan peribahasa keselamatan!
+            </p>
+
+            <!-- Stars display -->
+            <div class="flex justify-center items-center gap-2 mb-8">
+                <span class="text-4xl sm:text-5xl animate-pulse">⭐</span>
+                <span class="text-4xl sm:text-5xl animate-pulse">⭐</span>
+                <span class="text-4xl sm:text-5xl animate-pulse">⭐</span>
+                <span class="text-4xl sm:text-5xl animate-pulse">⭐</span>
+                <span class="text-4xl sm:text-5xl animate-pulse">⭐</span>
+            </div>
+
+            <!-- Summary box -->
+            <div class="bg-pastel-blue/40 border-2 border-sky-200 rounded-2xl p-4 sm:p-6 max-w-md mx-auto mb-8 text-left">
+                <h4 class="font-bold text-dark-blue mb-2 text-center text-lg">💡 Rumusan Pembelajaran:</h4>
+                <ul class="text-xs sm:text-sm text-slate-700 space-y-2 list-disc list-inside">
+                    <li>Sediakan payung sebelum hujan</li>
+                    <li>Beringat sebelum kena</li>
+                    <li>Mencegah lebih baik daripada mengubati</li>
+                    <li>Berat sama dipikul, ringan sama dijinjing</li>
+                    <li>Malang tidak berbau</li>
+                </ul>
+            </div>
+
+            <button onclick="restartActivity()" class="btn-bounce btn-yellow text-lg sm:text-xl font-bold px-8 py-3.5 rounded-2xl cursor-pointer inline-flex items-center gap-2">
+                🔄 CUBA LAGI
+            </button>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs sm:text-sm text-slate-500 font-medium mt-4">
+        © Laman Pembelajaran Bahasa Melayu Tahun 5 • Sekolah Rendah Malaysia
+    </footer>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Questions Data Array
+        const questionsData = [
+            {
+                id: 1,
+                title: "Soalan 1 daripada 5",
+                situation: "Seorang murid membawa payung ketika hujan.",
+                proverb: "Sediakan payung sebelum hujan.",
+                sample1: "Amir membawa payung sebelum keluar dari rumah.",
+                sample2: "Amir mengamalkan peribahasa \"sediakan payung sebelum hujan\" dengan membuat persediaan sebelum hujan turun.",
+                svgIllustration: `
+                    <svg viewBox="0 0 300 200" class="w-full h-full">
+                        <!-- Cloud and Rain -->
+                        <path d="M50 40 Q65 20 90 30 Q110 15 130 30 Q150 20 165 40 Q175 60 150 70 L60 70 Q40 60 50 40 Z" fill="#94A3B8"/>
+                        <line x1="70" y1="80" x2="60" y2="100" stroke="#0284C7" stroke-width="3" stroke-dasharray="4,4"/>
+                        <line x1="100" y1="80" x2="90" y2="100" stroke="#0284C7" stroke-width="3" stroke-dasharray="4,4"/>
+                        <line x1="130" y1="80" x2="120" y2="100" stroke="#0284C7" stroke-width="3" stroke-dasharray="4,4"/>
+                        
+                        <!-- Student Amir holding Umbrella -->
+                        <!-- Umbrella -->
+                        <path d="M150 90 A 45 45 0 0 1 240 90 Z" fill="#EF4444"/>
+                        <path d="M150 90 Q172 100 195 90 Q217 100 240 90 Z" fill="#DC2626"/>
+                        <line x1="195" y1="90" x2="195" y2="155" stroke="#475569" stroke-width="4"/>
+                        <path d="M195 155 Q195 165 185 165" fill="none" stroke="#475569" stroke-width="4"/>
+
+                        <!-- Amir -->
+                        <circle cx="170" cy="115" r="14" fill="#FDE047"/> <!-- Head -->
+                        <path d="M158 112 C158 98 182 98 182 112" fill="#1E3A8A"/> <!-- Hair -->
+                        <circle cx="166" cy="114" r="2" fill="#000"/> <!-- Eye -->
+                        <path d="M168 122 Q171 125 174 122" stroke="#000" stroke-width="1.5" fill="none"/> <!-- Smile -->
+                        <path d="M160 130 L180 130 L180 170 L160 170 Z" fill="#0284C7"/> <!-- Uniform Body -->
+                        <line x1="165" y1="170" x2="165" y2="190" stroke="#1E293B" stroke-width="4"/> <!-- Leg L -->
+                        <line x1="175" y1="170" x2="175" y2="190" stroke="#1E293B" stroke-width="4"/> <!-- Leg R -->
+                        <!-- Raindrops -->
+                        <path d="M220 50 Q220 60 217 65 Q214 60 214 50 Z" fill="#38BDF8"/>
+                    </svg>
+                `
+            },
+            {
+                id: 2,
+                title: "Soalan 2 daripada 5",
+                situation: "Seorang murid memakai topi keledar sebelum menunggang basikal.",
+                proverb: "Beringat sebelum kena.",
+                sample1: "Hakim memakai topi keledar sebelum menunggang basikal.",
+                sample2: "Hakim sentiasa beringat sebelum kena dengan mengutamakan keselamatan ketika berbasikal.",
+                svgIllustration: `
+                    <svg viewBox="0 0 300 200" class="w-full h-full">
+                        <!-- Sun -->
+                        <circle cx="260" cy="40" r="20" fill="#FACC15"/>
+
+                        <!-- Bicycle -->
+                        <circle cx="90" cy="150" r="28" stroke="#334155" stroke-width="5" fill="none"/>
+                        <circle cx="200" cy="150" r="28" stroke="#334155" stroke-width="5" fill="none"/>
+                        <path d="M90 150 L130 150 L160 110 L110 110 Z" stroke="#DC2626" stroke-width="4" fill="none"/>
+                        <line x1="130" y1="150" x2="145" y2="95" stroke="#DC2626" stroke-width="4"/>
+                        <line x1="200" y1="150" x2="175" y2="95" stroke="#334155" stroke-width="4"/>
+                        <line x1="165" y1="95" x2="185" y2="95" stroke="#334155" stroke-width="4"/> <!-- Handlebar -->
+
+                        <!-- Hakim with Helmet -->
+                        <circle cx="140" cy="65" r="15" fill="#FDE047"/> <!-- Head -->
+                        <path d="M122 65 C122 45 158 45 158 65 Z" fill="#2563EB"/> <!-- Helmet -->
+                        <path d="M126 65 L154 65" stroke="#1D4ED8" stroke-width="3"/> <!-- Helmet Strap Rim -->
+                        <path d="M128 65 L135 75 L142 65" stroke="#000" stroke-width="1.5" fill="none"/> <!-- Strap -->
+                        <circle cx="145" cy="65" r="2" fill="#000"/> <!-- Eye -->
+                        <path d="M142 72 Q145 75 148 72" stroke="#000" stroke-width="1.5" fill="none"/>
+
+                        <path d="M130 80 L150 80 L155 115 L125 115 Z" fill="#16A34A"/> <!-- Shirt -->
+                    </svg>
+                `
+            },
+            {
+                id: 3,
+                title: "Soalan 3 daripada 5",
+                situation: "Seorang murid memakai pelitup muka dan membersihkan tangan untuk mencegah penyakit.",
+                proverb: "Mencegah lebih baik daripada mengubati.",
+                sample1: "Aina membersihkan tangannya sebelum masuk ke kelas.",
+                sample2: "Aina mengamalkan prinsip \"mencegah lebih baik daripada mengubati\" dengan menjaga kebersihan diri.",
+                svgIllustration: `
+                    <svg viewBox="0 0 300 200" class="w-full h-full">
+                        <!-- Sink/Wash Station -->
+                        <rect x="170" y="120" width="80" height="50" rx="10" fill="#CBD5E1"/>
+                        <rect x="180" y="110" width="60" height="15" rx="5" fill="#94A3B8"/>
+                        <path d="M210 80 L210 105 A 5 5 0 0 0 215 110" fill="none" stroke="#64748B" stroke-width="6"/>
+
+                        <!-- Water Stream -->
+                        <line x1="210" y1="105" x2="210" y2="135" stroke="#38BDF8" stroke-width="4" stroke-dasharray="6,2"/>
+
+                        <!-- Soap Bottle -->
+                        <rect x="235" y="85" width="18" height="25" rx="4" fill="#F472B6"/>
+                        <rect x="240" y="78" width="8" height="7" fill="#E2E8F0"/>
+
+                        <!-- Aina with Face Mask -->
+                        <circle cx="120" cy="80" r="22" fill="#FED7AA"/>
+                        <!-- Tudung -->
+                        <path d="M92 80 C92 45 148 45 148 80 C148 115 92 115 92 80 Z" fill="#0284C7"/>
+                        <circle cx="112" cy="78" r="2.5" fill="#000"/> <!-- Eye L -->
+                        <circle cx="128" cy="78" r="2.5" fill="#000"/> <!-- Eye R -->
+                        
+                        <!-- Face Mask -->
+                        <rect x="108" y="83" width="24" height="14" rx="3" fill="#FFFFFF" stroke="#94A3B8"/>
+                        <line x1="108" y1="86" x2="98" y2="84" stroke="#FFFFFF" stroke-width="1.5"/>
+                        <line x1="132" y1="86" x2="142" y2="84" stroke="#FFFFFF" stroke-width="1.5"/>
+
+                        <path d="M102 115 L138 115 L145 160 L95 160 Z" fill="#38BDF8"/> <!-- Uniform -->
+                        
+                        <!-- Hands under water -->
+                        <path d="M135 125 L195 125" stroke="#FED7AA" stroke-width="8" stroke-linecap="round"/>
+                        <!-- Bubbles -->
+                        <circle cx="200" cy="120" r="4" fill="#E0F2FE" stroke="#38BDF8"/>
+                        <circle cx="215" cy="118" r="6" fill="#E0F2FE" stroke="#38BDF8"/>
+                    </svg>
+                `
+            },
+            {
+                id: 4,
+                title: "Soalan 4 daripada 5",
+                situation: "Seorang murid membantu rakannya yang terjatuh di laluan sekolah yang licin.",
+                proverb: "Berat sama dipikul, ringan sama dijinjing.",
+                sample1: "Amir membantu rakannya yang tergelincir di laluan sekolah.",
+                sample2: "Mereka mengamalkan peribahasa \"berat sama dipikul, ringan sama dijinjing\" dengan saling membantu.",
+                svgIllustration: `
+                    <svg viewBox="0 0 300 200" class="w-full h-full">
+                        <!-- Slippery Warning Sign -->
+                        <polygon points="40,150 65,100 90,150" fill="#FACC15" stroke="#CA8A04" stroke-width="3"/>
+                        <text x="65" y="140" font-size="22" font-weight="bold" text-anchor="middle" fill="#000">!</text>
+
+                        <!-- Puddle -->
+                        <ellipse cx="160" cy="170" rx="70" ry="12" fill="#BAE6FD"/>
+
+                        <!-- Fallen Student -->
+                        <circle cx="130" cy="140" r="12" fill="#FDE047"/>
+                        <path d="M120 148 L150 155 L135 175" stroke="#0284C7" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+                        <!-- Helping Student -->
+                        <circle cx="195" cy="105" r="14" fill="#FDE047"/> <!-- Head -->
+                        <path d="M183 102 C183 88 207 88 207 102" fill="#1E3A8A"/> <!-- Hair -->
+                        <path d="M185 120 L205 120 L200 165 L190 165 Z" fill="#0284C7"/> <!-- Body -->
+                        <!-- Extended Arm -->
+                        <path d="M185 125 L145 138" stroke="#FDE047" stroke-width="6" stroke-linecap="round"/>
+                        <!-- Heart icon above -->
+                        <path d="M160 80 Q160 72 167 72 Q172 72 175 78 Q178 72 183 72 Q190 72 190 80 Q190 90 175 98 Q160 90 160 80 Z" fill="#EF4444"/>
+                    </svg>
+                `
+            },
+            {
+                id: 5,
+                title: "Soalan 5 daripada 5",
+                situation: "Seorang murid berhati-hati ketika melintas jalan di lintasan pejalan kaki.",
+                proverb: "Malang tidak berbau.",
+                sample1: "Aina melihat ke kiri dan ke kanan sebelum melintas jalan.",
+                sample2: "Aina sentiasa berhati-hati kerana malang tidak berbau.",
+                svgIllustration: `
+                    <svg viewBox="0 0 300 200" class="w-full h-full">
+                        <!-- Road & Zebra Crossing -->
+                        <rect x="0" y="110" width="300" height="90" fill="#475569"/>
+                        <!-- Zebra Stripes -->
+                        <rect x="20" y="115" width="25" height="80" fill="#FFFFFF"/>
+                        <rect x="75" y="115" width="25" height="80" fill="#FFFFFF"/>
+                        <rect x="130" y="115" width="25" height="80" fill="#FFFFFF"/>
+                        <rect x="185" y="115" width="25" height="80" fill="#FFFFFF"/>
+                        <rect x="240" y="115" width="25" height="80" fill="#FFFFFF"/>
+
+                        <!-- Traffic Light Pole -->
+                        <rect x="265" y="20" width="10" height="100" fill="#94A3B8"/>
+                        <rect x="257" y="20" width="26" height="55" rx="5" fill="#1E293B"/>
+                        <circle cx="270" cy="32" r="6" fill="#EF4444"/> <!-- Red -->
+                        <circle cx="270" cy="47" r="6" fill="#FEF08A"/> <!-- Yellow -->
+                        <circle cx="270" cy="62" r="6" fill="#22C55E"/> <!-- Green -->
+
+                        <!-- Student Crossing safely -->
+                        <circle cx="100" cy="80" r="15" fill="#FED7AA"/>
+                        <!-- Tudung -->
+                        <path d="M80 80 C80 50 120 50 120 80 C120 105 80 105 80 80 Z" fill="#0284C7"/>
+                        <circle cx="95" cy="78" r="2" fill="#000"/>
+                        <circle cx="105" cy="78" r="2" fill="#000"/>
+                        <path d="M88 100 L112 100 L112 140 L88 140 Z" fill="#38BDF8"/>
+                        <!-- Walking Legs -->
+                        <line x1="92" y1="140" x2="85" y2="165" stroke="#1E293B" stroke-width="4"/>
+                        <line x1="108" y1="140" x2="118" y2="165" stroke="#1E293B" stroke-width="4"/>
+                    </svg>
+                `
+            }
+        ];
+
+        // State variables
+        let currentIndex = 0;
+        let userAnswers = Array(questionsData.length).fill().map(() => ({ ayat1: "", ayat2: "" }));
+        let completedQuestions = new Set();
+
+        // DOM elements
+        const homeScreen = document.getElementById('home-screen');
+        const activityScreen = document.getElementById('activity-screen');
+        const finishScreen = document.getElementById('finish-screen');
+
+        const questionBadge = document.getElementById('question-badge');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const illustrationContainer = document.getElementById('illustration-container');
+        const proverbText = document.getElementById('proverb-text');
+
+        const inputAyat1 = document.getElementById('input-ayat-1');
+        const inputAyat2 = document.getElementById('input-ayat-2');
+
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackText = document.getElementById('feedback-text');
+
+        const sampleAnswerBox = document.getElementById('sample-answer-box');
+        const sample1Text = document.getElementById('sample-1-text');
+        const sample2Text = document.getElementById('sample-2-text');
+
+        const btnBack = document.getElementById('btn-back');
+        const btnNext = document.getElementById('btn-next');
+        const scoreStarCount = document.getElementById('score-star-count');
+
+        // Start Activity
+        function startActivity() {
+            homeScreen.classList.add('hidden');
+            finishScreen.classList.add('hidden');
+            activityScreen.classList.remove('hidden');
+            activityScreen.classList.add('flex');
+            currentIndex = 0;
+            loadQuestion(currentIndex);
+        }
+
+        // Load Question based on index
+        function loadQuestion(index) {
+            const q = questionsData[index];
+
+            // Save user draft input from current state before moving if any
+            saveCurrentInputs();
+
+            // Update Header & Badge
+            questionBadge.textContent = q.title;
+            const progressPercent = ((index + 1) / questionsData.length) * 100;
+            progressBarFill.style.width = `${progressPercent}%`;
+
+            // Update Illustration & Proverb
+            illustrationContainer.innerHTML = q.svgIllustration;
+            proverbText.textContent = `"${q.proverb}"`;
+
+            // Populate Inputs with saved state
+            inputAyat1.value = userAnswers[index].ayat1 || "";
+            inputAyat2.value = userAnswers[index].ayat2 || "";
+
+            // Populate Sample Answers
+            sample1Text.textContent = q.sample1;
+            sample2Text.textContent = q.sample2;
+
+            // Hide Sample Box & Feedback Box on question load
+            sampleAnswerBox.classList.add('hidden');
+            feedbackBox.classList.add('hidden');
+
+            // Toggle Back button state
+            if (index === 0) {
+                btnBack.disabled = true;
+                btnBack.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnBack.disabled = false;
+                btnBack.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Next button text check
+            if (index === questionsData.length - 1) {
+                btnNext.innerHTML = 'Selesai 🏆';
+            } else {
+                btnNext.innerHTML = 'Soalan Seterusnya 👉';
+            }
+        }
+
+        // Save current user text inputs into state array
+        function saveCurrentInputs() {
+            if (currentIndex >= 0 && currentIndex < questionsData.length) {
+                userAnswers[currentIndex].ayat1 = inputAyat1.value;
+                userAnswers[currentIndex].ayat2 = inputAyat2.value;
+            }
+        }
+
+        // Check Answer Function
+        function checkAnswer() {
+            const text1 = inputAyat1.value.trim();
+            const text2 = inputAyat2.value.trim();
+
+            feedbackBox.classList.remove('hidden', 'bg-green-100', 'border-green-400', 'text-green-800', 'bg-amber-100', 'border-amber-400', 'text-amber-800');
+
+            // Validation: Both fields must be filled
+            if (text1 === "" || text2 === "") {
+                feedbackBox.classList.add('bg-amber-100', 'border-amber-400', 'text-amber-800');
+                feedbackText.innerHTML = "⚠️ Sila isi kedua-dua ruang jawapan (Ayat 1 dan Ayat 2) sebelum menyemak!";
+                return;
+            }
+
+            // Check if student includes proverb key phrase in either sentence
+            const currentProverb = questionsData[currentIndex].proverb.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()"]/g,"");
+            const combinedText = (text1 + " " + text2).toLowerCase();
+
+            // Extract main keyword from proverb for soft matching
+            const proverbKeywords = getProverbKeywords(currentIndex);
+            const containsProverbKeyword = proverbKeywords.some(kw => combinedText.includes(kw));
+
+            if (containsProverbKeyword) {
+                feedbackBox.classList.add('bg-green-100', 'border-green-400', 'text-green-800');
+                feedbackText.innerHTML = "🌟 Bagus! Teruskan usaha membina ayat yang gramatis! Ayat kamu telah mengandungi peribahasa yang sesuai.";
+                
+                // Mark question as completed
+                completedQuestions.add(currentIndex);
+                updateStarCount();
+            } else {
+                // Gentle guidance message, not strict marking
+                feedbackBox.classList.add('bg-amber-100', 'border-amber-400', 'text-amber-800');
+                feedbackText.innerHTML = `💡 Ayat kamu menarik! Namun, pastikan salah satu ayat mengandungi peribahasa <strong>"${questionsData[currentIndex].proverb}"</strong> secara tepat atau frasa utamanya.`;
+            }
+        }
+
+        // Helper keywords for soft proverb detection
+        function getProverbKeywords(index) {
+            switch(index) {
+                case 0: return ["sediakan payung sebelum hujan", "payung sebelum hujan"];
+                case 1: return ["beringat sebelum kena"];
+                case 2: return ["mencegah lebih baik daripada mengubati", "mencegah lebih baik"];
+                case 3: return ["berat sama dipikul", "ringan sama dijinjing", "dipikul", "dijinjing"];
+                case 4: return ["malang tidak berbau"];
+                default: return [];
+            }
+        }
+
+        // Toggle Sample Answer Visibility
+        function toggleSampleAnswer() {
+            if (sampleAnswerBox.classList.contains('hidden')) {
+                sampleAnswerBox.classList.remove('hidden');
+            } else {
+                sampleAnswerBox.classList.add('hidden');
+            }
+        }
+
+        // Update Stars Counter
+        function updateStarCount() {
+            scoreStarCount.textContent = completedQuestions.size;
+        }
+
+        // Navigation: Next Question
+        function nextQuestion() {
+            saveCurrentInputs();
+
+            if (currentIndex < questionsData.length - 1) {
+                currentIndex++;
+                loadQuestion(currentIndex);
+            } else {
+                showFinishScreen();
+            }
+        }
+
+        // Navigation: Previous Question
+        function prevQuestion() {
+            saveCurrentInputs();
+
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion(currentIndex);
+            }
+        }
+
+        // Show Final Screen
+        function showFinishScreen() {
+            activityScreen.classList.remove('flex');
+            activityScreen.classList.add('hidden');
+            finishScreen.classList.remove('hidden');
+
+            // Fire confetti effect
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        // Restart Activity
+        function restartActivity() {
+            currentIndex = 0;
+            userAnswers = Array(questionsData.length).fill().map(() => ({ ayat1: "", ayat2: "" }));
+            completedQuestions.clear();
+            updateStarCount();
+            startActivity();
+        }
+
+        // Save inputs continuously on input change
+        inputAyat1.addEventListener('input', saveCurrentInputs);
+        inputAyat2.addEventListener('input', saveCurrentInputs);
+    </script>
+</body>
+</html>
